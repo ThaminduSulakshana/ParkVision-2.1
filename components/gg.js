@@ -245,7 +245,7 @@ const GG = () => {
           <IconButton icon="pine-tree" size={80} iconColor="#2e7d32" style={styles.icon} />
         </Animated.View>
 
-        <Text style={styles.subtitle}>Discover and explore parks near you</Text>
+        <Text style={styles.subtitle}>Discover ssssand explore parks near you</Text>
 
         <Animated.View style={[styles.buttonsContainer, { opacity: buttonFadeAnim }]}>
           <Button

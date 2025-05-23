@@ -6,6 +6,7 @@ import { Provider as PaperProvider, Button, Text } from 'react-native-paper';
 
 import NavigationPanel from './components/NavigationPanel';
 import GG from './components/gg';
+import AR from './components/ARNavi';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,6 +20,9 @@ const HomeScreen = ({ navigation }) => {
       <Button mode="outlined" onPress={() => navigation.navigate('GG')} style={styles.button}>
         Go to GG
       </Button>
+      <Button mode="outlined" onPress={() => navigation.navigate('AR')} style={styles.button}>
+        AR navigate
+      </Button>
     </View>
   );
 };
@@ -31,6 +35,7 @@ export default function App() {
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="NavigationPanel" component={NavigationPanel} options={{ title: 'Select Slot' }} />
           <Stack.Screen name="GG" component={GG} options={{ title: 'GG Page' }} />
+          <Stack.Screen name="AR" component={AR} options={{ title: 'AR Page' }} />
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>
