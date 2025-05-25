@@ -1,114 +1,163 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, Animated, Easing, Alert, Linking } from 'react-native';
+import { Text, IconButton, Button } from 'react-native-paper';
 
-const ARNavi = () => {
-  const [isAnimated, setIsAnimated] = useState(false);
-  const [showButtons, setShowButtons] = useState(false);
+const ARNavigationWelcome = () => {
+  const fadeAnim = new Animated.Value(0);
+  const scaleAnim = new Animated.Value(0.5);
+  const moveAnim = new Animated.Value(-100);
+  const buttonFadeAnim = new Animated.Value(0);
+  const cardFadeAnim = new Animated.Value(0);
 
   useEffect(() => {
-    // Trigger animations on mount
-    setTimeout(() => setIsAnimated(true), 100);
-    setTimeout(() => setShowButtons(true), 800);
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 800,
+        easing: Easing.bounce,
+        useNativeDriver: true,
+      }),
+      Animated.timing(moveAnim, {
+        toValue: 0,
+        duration: 800,
+        easing: Easing.out(Easing.back(1.5)),
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      Animated.parallel([
+        Animated.timing(cardFadeAnim, {
+          toValue: 1,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+        Animated.timing(buttonFadeAnim, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    });
   }, []);
 
-  // Function to open gallery (works in web browsers)
-  const openGallery = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.multiple = true;
-    input.onchange = (e) => {
-      const files = e.target.files;
-      if (files && files.length > 0) {
-        alert(`Selected ${files.length} image(s) from gallery!`);
-        console.log('Gallery files:', files);
-      }
-    };
-    input.click();
-  };
+  // Function to start AR navigation
+  const startARNavigation = async () => {
+    const appURL = 'arnavi://';
 
-  // Function to open camera
-  const openCamera = () => {
-    alert('Camera functionality would open device camera in mobile app');
-  };
+    const supported = await Linking.canOpenURL(appURL);
 
-  // Function to open maps
-  const openMaps = () => {
-    window.open('https://maps.google.com/?q=parks+near+me', '_blank');
+    if (supported) {
+      Linking.openURL(appURL);
+    } else {
+      Alert.alert(
+        'ARnavi Not Found',
+        'Make sure the ARnavi Unity app is installed on this device.'
+      );
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-green-100 flex items-center justify-center p-6">
-      <div 
-        className={`text-center transition-all duration-1000 transform ${
-          isAnimated ? 'translate-y-0 opacity-100 scale-100' : '-translate-y-12 opacity-0 scale-90'
-        }`}
+    <View style={styles.container}>
+      <Animated.View
+        style={[
+          styles.headerContainer,
+          {
+            opacity: fadeAnim,
+            transform: [
+              { scale: scaleAnim },
+              { translateY: moveAnim },
+            ],
+          },
+        ]}
       >
-        {/* App Icon and Title */}
-        <div className="mb-8">
-          <div className={`inline-flex items-center justify-center w-24 h-24 bg-green-100 rounded-full mb-6 transition-all duration-800 ${
-            isAnimated ? 'rotate-0 scale-100' : 'rotate-12 scale-75'
-          }`}>
-            <span className="text-4xl">🌲</span>
-          </div>
-          <h1 className="text-4xl font-bold text-green-700 mb-4">
-            ParkVisions
-          </h1>
-          <p className="text-lg text-gray-600 max-w-md mx-auto">
-            AR-based navigation system for parking lots. Discover and explore parks near you with advanced AR technology.
-          </p>
-        </div>
-
-        {/* Feature Description */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 mb-8 max-w-lg mx-auto shadow-lg">
-          <h2 className="text-xl font-semibold text-gray-800 mb-3">
-            AR Navigation Features
-          </h2>
-          <ul className="text-sm text-gray-600 space-y-2">
-            <li>• Unity AR Foundation framework</li>
-            <li>• Real-time pathfinding with NavMesh</li>
-            <li>• 3D environment navigation</li>
-            <li>• Offline AR experiences</li>
-          </ul>
-        </div>
-
-        {/* Action Buttons */}
-        <div 
-          className={`space-y-4 transition-all duration-500 ${
-            showButtons ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-          }`}
+        <Text variant="headlineLarge" style={styles.title}>AR Park Navigation</Text>
+        <Animated.View
+          style={{
+            opacity: fadeAnim,
+            transform: [{ scale: scaleAnim }],
+          }}
         >
-          <button
-            onClick={openGallery}
-            className="w-full max-w-xs bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-3"
-          >
-            <span>📷</span>
-            Open Gallery
-          </button>
-          
-          <button
-            onClick={openCamera}
-            className="w-full max-w-xs border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white font-semibold py-3 px-6 rounded-full transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-3"
-          >
-            <span>📸</span>
-            Open Camera
-          </button>
-          
-          <button
-            onClick={openMaps}
-            className="w-full max-w-xs border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold py-3 px-6 rounded-full transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-3"
-          >
-            <span>🗺️</span>
-            Find Parks
-          </button>
-        </div>
+          <IconButton
+            icon="augmented-reality"
+            size={100}
+            iconColor="#1976d2"
+            style={styles.arIcon}
+          />
+        </Animated.View>
+        <Text style={styles.subtitle}>Navigate parks with Augmented Reality</Text>
+      </Animated.View>
 
-        {/* Testing Note */}
-        <div className="mt-8 text-sm text-gray-500">
-          <p>Gallery button opens file selector for testing</p>
-        </div>
-      </div>
-    </div>
+      <Animated.View style={[styles.buttonsContainer, { opacity: buttonFadeAnim }]}>
+        <Button
+          mode="contained"
+          onPress={startARNavigation}
+          style={[styles.button, styles.primaryButton]}
+          contentStyle={styles.buttonContent}
+          labelStyle={styles.buttonLabel}
+          icon="augmented-reality"
+        >
+          Start AR Navigation
+        </Button>
+      </Animated.View>
+    </View>
   );
 };
 
-export default ARNavi;
+export default ARNavigationWelcome;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fafafa',
+  },
+  headerContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 30,
+  },
+  title: {
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#1976d2',
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 10,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  arIcon: {
+    margin: 20,
+    backgroundColor: '#e3f2fd',
+  },
+  buttonsContainer: {
+    alignItems: 'center',
+    width: '100%',
+    paddingHorizontal: 20,
+  },
+  button: {
+    marginVertical: 6,
+    borderRadius: 25,
+    width: '80%',
+  },
+  primaryButton: {
+    backgroundColor: '#1976d2',
+    elevation: 3,
+  },
+  buttonContent: {
+    paddingVertical: 12,
+  },
+  buttonLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+});
